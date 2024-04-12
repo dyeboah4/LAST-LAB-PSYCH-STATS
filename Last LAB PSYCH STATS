@@ -1,0 +1,48 @@
+library(tidyverse)
+── Attaching core tidyverse packages ─────────────────────────────────────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ───────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package to force all conflicts to become errors
+> library(dplyr)
+> library(ggplot2)
+> load("~/Downloads/Household_Pulse_data_ph4c2.RData")
+> library(tidyverse)
+> library(plyr)
+summary(Household_Pulse_data$SUPPORT3)
+                                                               NA 
+                                                             6703 
+attend church or religious ceremony never or less than 1 per year 
+                                                            35992 
+                                                  1 to 3 per year 
+                                                             8433 
+                                                 4 to 11 per year 
+                                                             3948 
+                                               12+ times per year 
+                                                            16076 
+> select2 <- (Household_Pulse_data$DOWN != "NA")
+> d_down <- subset(Household_Pulse_data, select2)
+> d_down$DOWN <- fct_drop(d_down$DOWN) # drop unused levels
+> d_down$down_severe <- as.numeric( 
++     (d_down$DOWN == "more than half the days over past 2 wks") | 
++         (d_down$DOWN == "nearly every day") )
+> 
+> xtabs(~ d_down$DOWN + d_down$down_severe) 
+                                         d_down$down_severe
+d_down$DOWN                                   0     1
+  no days in past 2 wks feeling depressed 44300     0
+  several days over past 2 wks            15438     0
+  more than half the days over past 2 wks     0  2965
+  nearly every day                            0  2849
+select4 <- (Household_Pulse_data$SUPPORT3 != "NA") 
+> RELI <- subset(Household_Pulse_data, select4) 
+> RELI$SUPPORT3 <- fct_recode(RELI$SUPPORT3) 
+> RELI$SUPPORT3 <- fct_recode(RELI$SUPPORT3) 
+> RELI$RELIOUS3 <- as.numeric((RELI$SUPPORT3 == "12+ times per year") | (RELI$SUPPORT3 == "4 to 11 per year"))  
+> xtabs(~ RELI$SUPPORT3 + RELSUPPORT3)
+> tree_mod1 <- rpart(RELSUPPORT3 ~ ., data = RELI, method = "class", cp = 0.01) 
